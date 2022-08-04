@@ -33,6 +33,9 @@ export enum Calculations {
   ConvertSeconds = "convertSeconds",
   ConvertMilliseconds = "convertMilliseconds",
   MsTos = "msTos",
+  Average = "average",
+  PercentageAvg = "percentageAvg",
+  ApdexAvg = "apdexAvg",
 }
 export enum sizeEnum {
   XS = "XS",

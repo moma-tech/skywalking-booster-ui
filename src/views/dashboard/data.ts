@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export const dragIgnoreFrom =
+  "svg.d3-trace-tree, .dragger, .micro-topo-chart, .schedules";
 
 export const PodsChartTypes = ["EndpointList", "InstanceList"];
 
@@ -181,7 +183,8 @@ export const ServiceTools = [
   { name: "library_books", content: "Text", id: "addText" },
   { name: "device_hub", content: "Topology", id: "addTopology" },
   { name: "merge", content: "Trace", id: "addTrace" },
-  { name: "timeline", content: "Profile", id: "addProfile" },
+  { name: "timeline", content: "Trace Profiling", id: "addProfile" },
+  { name: "insert_chart", content: "eBPF Profiling", id: "addEbpf" },
   { name: "assignment", content: "Log", id: "addLog" },
 ];
 export const InstanceTools = [
@@ -263,14 +266,17 @@ export const TextColors: { [key: string]: string } = {
 export const CalculationOpts = [
   { label: "Percentage", value: "percentage" },
   { label: "Apdex", value: "apdex" },
+  { label: "Avg-preview", value: "average" },
+  { label: "Percentage + Avg-preview", value: "percentageAvg" },
+  { label: "Apdex + Avg-preview", value: "apdexAvg" },
   { label: "Byte to KB", value: "byteToKB" },
   { label: "Byte to MB", value: "byteToMB" },
   { label: "Byte to GB", value: "byteToGB" },
   {
-    label: "Convert milliseconds to YYYY-MM-DD HH:mm:ss",
+    label: "Milliseconds to YYYY-MM-DD HH:mm:ss",
     value: "convertMilliseconds",
   },
-  { label: "Convert seconds to YYYY-MM-DD HH:mm:ss", value: "convertSeconds" },
+  { label: "Seconds to YYYY-MM-DD HH:mm:ss", value: "convertSeconds" },
   { label: "Precision is 2", value: "precision" },
   { label: "Milliseconds to seconds", value: "msTos" },
 ];

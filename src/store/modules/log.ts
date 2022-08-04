@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 import { defineStore } from "pinia";
-import { Duration } from "@/types/app";
 import { Instance, Endpoint, Service } from "@/types/selector";
 import { store } from "@/store";
 import graphql from "@/graphql";
@@ -29,11 +28,9 @@ interface LogState {
   instances: Instance[];
   endpoints: Endpoint[];
   conditions: any;
-  durationTime: Duration;
   selectorStore: any;
   supportQueryLogsByKeywords: boolean;
   logs: any[];
-  logsTotal: number;
   loadLogs: boolean;
 }
 
@@ -45,13 +42,11 @@ export const logStore = defineStore({
     endpoints: [{ value: "0", label: "All" }],
     conditions: {
       queryDuration: useAppStoreWithOut().durationTime,
-      paging: { pageNum: 1, pageSize: 15, needTotal: true },
+      paging: { pageNum: 1, pageSize: 15 },
     },
     supportQueryLogsByKeywords: true,
-    durationTime: useAppStoreWithOut().durationTime,
     selectorStore: useSelectorStore(),
     logs: [],
-    logsTotal: 0,
     loadLogs: false,
   }),
   actions: {
@@ -74,7 +69,7 @@ export const logStore = defineStore({
         : id;
       const res: AxiosResponse = await graphql.query("queryInstances").params({
         serviceId,
-        duration: this.durationTime,
+        duration: useAppStoreWithOut().durationTime,
       });
 
       if (res.data.errors) {
@@ -92,7 +87,7 @@ export const logStore = defineStore({
         : id;
       const res: AxiosResponse = await graphql.query("queryEndpoints").params({
         serviceId,
-        duration: this.durationTime,
+        duration: useAppStoreWithOut().durationTime,
         keyword: keyword || "",
       });
       if (res.data.errors) {
@@ -134,7 +129,6 @@ export const logStore = defineStore({
       }
 
       this.logs = res.data.data.queryLogs.logs;
-      this.logsTotal = res.data.data.queryLogs.total;
       return res.data;
     },
     async getBrowserLogs() {
@@ -148,7 +142,20 @@ export const logStore = defineStore({
         return res.data;
       }
       this.logs = res.data.data.queryBrowserErrorLogs.logs;
-      this.logsTotal = res.data.data.queryBrowserErrorLogs.total;
+      return res.data;
+    },
+    async getLogTagKeys() {
+      const res: AxiosResponse = await graphql
+        .query("queryLogTagKeys")
+        .params({ duration: useAppStoreWithOut().durationTime });
+
+      return res.data;
+    },
+    async getLogTagValues(tagKey: string) {
+      const res: AxiosResponse = await graphql
+        .query("queryLogTagValues")
+        .params({ tagKey, duration: useAppStoreWithOut().durationTime });
+
       return res.data;
     },
   },

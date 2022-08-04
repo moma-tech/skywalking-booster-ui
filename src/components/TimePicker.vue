@@ -280,7 +280,11 @@ const setDates = (d: Date, pos: string) => {
     dates.value[1] = d;
     return;
   }
-  dates.value[0] = d;
+  if (pos === "left") {
+    dates.value[0] = d;
+    return;
+  }
+  //dates.value[0] = d;
 };
 const dc = (e: any) => {
   show.value = (datepicker.value as any).contains(e.target) && !props.disabled;

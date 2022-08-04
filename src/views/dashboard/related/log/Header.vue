@@ -37,9 +37,9 @@ limitations under the License. -->
       />
     </div>
     <div class="mr-5" v-if="dashboardStore.entity !== EntityType[2].value">
-      <span class="grey mr-5"
-        >{{ isBrowser ? t("page") : t("endpoint") }}:</span
-      >
+      <span class="grey mr-5">
+        {{ isBrowser ? t("page") : t("endpoint") }}:
+      </span>
       <Selector
         size="small"
         :value="state.endpoint.value"
@@ -50,16 +50,24 @@ limitations under the License. -->
         @query="searchEndpoints"
       />
     </div>
-  </div>
-  <div class="row tips">
-    <b>{{ t("conditionNotice") }}</b>
+    <el-button
+      class="search-btn"
+      size="small"
+      type="primary"
+      @click="searchLogs"
+    >
+      {{ t("search") }}
+    </el-button>
   </div>
   <div class="flex-h row">
     <div class="mr-5 traceId" v-show="!isBrowser">
       <span class="grey mr-5">{{ t("traceID") }}:</span>
-      <el-input v-model="traceId" class="inputs-max" />
+      <el-input v-model="traceId" class="inputs-max" size="small" />
     </div>
     <ConditionTags :type="'LOG'" @update="updateTags" />
+  </div>
+  <div class="row tips">
+    <b>{{ t("conditionNotice") }}</b>
   </div>
   <div class="flex-h" v-show="!isBrowser">
     <div class="mr-5" v-show="logStore.supportQueryLogsByKeywords">
@@ -75,6 +83,7 @@ limitations under the License. -->
         </span>
       </span>
       <el-input
+        size="small"
         class="inputs-max"
         :placeholder="t('addKeywordsOfContent')"
         v-model="contentStr"
@@ -97,6 +106,7 @@ limitations under the License. -->
       </span>
       <el-input
         class="inputs-max"
+        size="small"
         :placeholder="t('addExcludingKeywordsOfContent')"
         v-model="excludingContentStr"
         @change="addLabels('excludingKeywordsOfContent')"
@@ -107,14 +117,6 @@ limitations under the License. -->
         </span>
       </el-tooltip>
     </div>
-    <el-button
-      class="search-btn"
-      size="small"
-      type="primary"
-      @click="searchLogs"
-    >
-      {{ t("search") }}
-    </el-button>
   </div>
 </template>
 <script lang="ts" setup>
@@ -224,10 +226,16 @@ function searchLogs() {
     endpointId: endpoint || state.endpoint.id || undefined,
     serviceInstanceId: instance || state.instance.id || undefined,
     queryDuration: appStore.durationTime,
-    keywordsOfContent: keywordsOfContent.value,
-    excludingKeywordsOfContent: excludingKeywordsOfContent.value,
+    keywordsOfContent:
+      dashboardStore.layerId === "BROWSER"
+        ? undefined
+        : keywordsOfContent.value,
+    excludingKeywordsOfContent:
+      dashboardStore.layerId === "BROWSER"
+        ? undefined
+        : excludingKeywordsOfContent.value,
     tags: tagsMap.value.length ? tagsMap.value : undefined,
-    paging: { pageNum: 1, pageSize: 15, needTotal: true },
+    paging: { pageNum: 1, pageSize: 15 },
     relatedTrace: traceId.value ? { traceId: traceId.value } : undefined,
   });
   queryLogs();
@@ -324,6 +332,7 @@ watch(
 
 .row {
   margin-bottom: 5px;
+  position: relative;
 }
 
 .inputs-max {
@@ -335,8 +344,11 @@ watch(
 }
 
 .search-btn {
-  margin-left: 20px;
+  position: absolute;
+  top: 0;
+  right: 10px;
   cursor: pointer;
+  width: 120px;
 }
 
 .tips {

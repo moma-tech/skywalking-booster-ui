@@ -38,12 +38,27 @@ limitations under the License. -->
         :border="true"
         :style="{ fontSize: '14px' }"
       >
-        <el-table-column label="Service Groups" v-if="config.showGroup">
+        <el-table-column
+          :min-width="15"
+          label="Country"
+          align="center"
+          v-if="config.showGroup"
+        >
           <template #default="scope">
-            {{ scope.row.group }}
+            {{ scope.row.country }}
           </template>
         </el-table-column>
-        <el-table-column label="Service Names">
+        <el-table-column
+          :min-width="15"
+          label="Groups"
+          align="center"
+          v-if="config.showGroup"
+        >
+          <template #default="scope">
+            {{ scope.row.category }}
+          </template>
+        </el-table-column>
+        <el-table-column :min-width="30" label="Service Names">
           <template #default="scope">
             <span
               class="link"
@@ -54,34 +69,11 @@ limitations under the License. -->
             </span>
           </template>
         </el-table-column>
-        <el-table-column
-          v-for="(metric, index) in colMetrics"
-          :label="`${decodeURIComponent(
-            getLabel(metric, index)
-          )} ${decodeURIComponent(getUnit(index))}`"
-          :key="metric + index"
-        >
-          <template #default="scope">
-            <div class="chart">
-              <Line
-                v-if="config.metricTypes[index] === 'readMetricsValues'"
-                :data="{ [metric]: scope.row[metric] }"
-                :intervalTime="intervalTime"
-                :config="{
-                  showXAxis: false,
-                  showYAxis: false,
-                  smallTips: true,
-                  showSymbol: true,
-                }"
-              />
-              <Card
-                v-else
-                :data="{ [metric]: scope.row[metric] }"
-                :config="{ textAlign: 'left' }"
-              />
-            </div>
-          </template>
-        </el-table-column>
+        <ColumnGraph
+          :intervalTime="intervalTime"
+          :colMetrics="colMetrics"
+          :config="config"
+        />
       </el-table>
     </div>
     <el-pagination
@@ -102,8 +94,6 @@ import { watch, ref, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { PropType } from "vue";
 import { ServiceListConfig } from "@/types/dashboard";
-import Line from "./Line.vue";
-import Card from "./Card.vue";
 import { useSelectorStore } from "@/store/modules/selectors";
 import { useDashboardStore } from "@/store/modules/dashboard";
 import { Service } from "@/types/selector";
@@ -112,6 +102,7 @@ import { EntityType } from "../data";
 import router from "@/router";
 import getDashboard from "@/hooks/useDashboardsSession";
 import { MetricConfigOpt } from "@/types/dashboard";
+import ColumnGraph from "./components/ColumnGraph.vue";
 
 /*global defineProps */
 const props = defineProps({
@@ -135,7 +126,7 @@ const props = defineProps({
 const selectorStore = useSelectorStore();
 const dashboardStore = useDashboardStore();
 const chartLoading = ref<boolean>(false);
-const pageSize = 10;
+const pageSize = 20;
 const services = ref<Service[]>([]);
 const searchText = ref<string>("");
 const groups = ref<any>({});
@@ -154,12 +145,20 @@ async function queryServices() {
     ElMessage.error(resp.errors);
   }
   sortServices.value = selectorStore.services.sort((a: any, b: any) => {
-    const groupA = a.group.toUpperCase();
-    const groupB = b.group.toUpperCase();
-    if (groupA < groupB) {
+    const countryA = a.group.toUpperCase();
+    const countryB = b.group.toUpperCase();
+    const categoryA = a.category.toUpperCase();
+    const categoryB = b.category.toUpperCase();
+    if (countryA < countryB) {
       return -1;
     }
-    if (groupA > groupB) {
+    if (countryA > countryB) {
+      return 1;
+    }
+    if (categoryA < categoryB) {
+      return -1;
+    }
+    if (categoryA > categoryB) {
       return 1;
     }
     return 0;
@@ -240,9 +239,11 @@ async function queryServiceMetrics(currentServices: Service[]) {
     });
     return;
   }
+
   services.value = currentServices;
 }
 function objectSpanMethod(param: any): any {
+  console.log(param);
   if (!props.config.showGroup) {
     return;
   }
@@ -255,7 +256,12 @@ function objectSpanMethod(param: any): any {
       colspan: 0,
     };
   }
-  return { rowspan: groups.value[param.row.group], colspan: 1 };
+  if (param.columnIndex == 0) {
+    return { rowspan: groups.value[param.row.group], colspan: 1 };
+  }
+  // if(param.columnIndex == 1 ){
+  //    return { rowspan: groups.value[param.row.country], colspan: 1 };
+  // }
 }
 function changePage(pageIndex: number) {
   const arr = sortServices.value.filter((d: Service, index: number) => {
@@ -274,26 +280,6 @@ function searchList() {
     (d: unknown, index: number) => index < pageSize
   );
   setServices(services);
-}
-function getUnit(index: number) {
-  const u =
-    props.config.metricConfig &&
-    props.config.metricConfig[index] &&
-    props.config.metricConfig[index].unit;
-  if (u) {
-    return `(${encodeURIComponent(u)})`;
-  }
-  return encodeURIComponent("");
-}
-function getLabel(metric: string, index: number) {
-  const label =
-    props.config.metricConfig &&
-    props.config.metricConfig[index] &&
-    props.config.metricConfig[index].label;
-  if (label) {
-    return encodeURIComponent(label);
-  }
-  return encodeURIComponent(metric);
 }
 
 watch(
@@ -317,10 +303,6 @@ watch(
 </script>
 <style lang="scss" scoped>
 @import "./style.scss";
-
-.chart {
-  height: 60px;
-}
 
 .inputs {
   width: 300px;

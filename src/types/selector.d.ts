@@ -18,6 +18,8 @@ export type Service = {
   id?: string;
   label: string;
   value: string;
+  country?: string;
+  category?: string;
   layers?: string[];
   normal?: boolean;
   group?: string;
@@ -26,7 +28,6 @@ export type Service = {
 export type Instance = {
   value: string;
   label: string;
-  layer?: string;
   language?: string;
   instanceUUID?: string;
   attributes?: { name: string; value: string }[];

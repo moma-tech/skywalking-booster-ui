@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
   <div class="flex-h tab-header">
-    <div class="tabs">
+    <div class="tabs scroll_bar_style" @click="handleClick">
       <span
         v-for="(child, idx) in data.children || []"
         :key="idx"
@@ -26,15 +26,15 @@ limitations under the License. -->
           v-model="child.name"
           placeholder="Please input"
           class="tab-name"
-          :readonly="isNaN(editTabIndex)"
-          :class="{ view: isNaN(editTabIndex) }"
+          :readonly="isNaN(editTabIndex) && !canEditTabName"
+          :class="{ view: !canEditTabName }"
         />
         <Icon
           v-show="activeTabIndex === idx"
           size="sm"
           iconName="cancel"
           @click="deleteTabItem($event, idx)"
-          v-if="dashboardStore.editMode"
+          v-if="dashboardStore.editMode && canEditTabName"
         />
       </span>
       <span class="tab-icons" v-if="dashboardStore.editMode">
@@ -46,35 +46,21 @@ limitations under the License. -->
       </span>
     </div>
     <div class="operations" v-if="dashboardStore.editMode">
-      <el-popover
-        placement="bottom"
-        trigger="click"
-        :width="200"
-        v-model:visible="showTools"
-      >
-        <template #reference>
-          <span>
-            <Icon
-              iconName="ellipsis_v"
-              size="middle"
-              class="operation"
-              @click="showTools = true"
-            />
-          </span>
+      <el-dropdown placement="bottom" trigger="click" :width="200">
+        <span class="icon-operation">
+          <Icon iconName="ellipsis_v" size="middle" />
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="canEditTabName = true">
+              <span class="edit-tab">{{ t("editTab") }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item @click="removeTab">
+              <span>{{ t("delete") }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
         </template>
-        <div
-          class="tools"
-          @click="
-            canEditTabName = true;
-            showTools = false;
-          "
-        >
-          <span class="edit-tab">{{ t("editTab") }}</span>
-        </div>
-        <div class="tools" @click="removeTab">
-          <span>{{ t("delete") }}</span>
-        </div>
-      </el-popover>
+      </el-dropdown>
     </div>
   </div>
   <div class="tab-layout" @click="handleClick">
@@ -97,7 +83,7 @@ limitations under the License. -->
         :key="item.i"
         @click="clickTabGrid($event, item)"
         :class="{ active: activeTabWidget === item.i }"
-        drag-ignore-from="svg.d3-trace-tree, .dragger, .micro-topo-chart"
+        :drag-ignore-from="dragIgnoreFrom"
       >
         <component
           :is="item.type"
@@ -122,6 +108,8 @@ import Trace from "./Trace.vue";
 import Profile from "./Profile.vue";
 import Log from "./Log.vue";
 import Text from "./Text.vue";
+import Ebpf from "./Ebpf.vue";
+import { dragIgnoreFrom } from "../data";
 
 const props = {
   data: {
@@ -132,7 +120,7 @@ const props = {
 };
 export default defineComponent({
   name: "Tab",
-  components: { Topology, Widget, Trace, Profile, Log, Text },
+  components: { Topology, Widget, Trace, Profile, Log, Text, Ebpf },
   props,
   setup(props) {
     const { t } = useI18n();
@@ -142,7 +130,6 @@ export default defineComponent({
     const editTabIndex = ref<number>(NaN); // edit tab item name
     const canEditTabName = ref<boolean>(false);
     const needQuery = ref<boolean>(false);
-    const showTools = ref<boolean>(false);
     const l = dashboardStore.layout.findIndex(
       (d: LayoutConfig) => d.i === props.data.i
     );
@@ -246,8 +233,8 @@ export default defineComponent({
       editTabIndex,
       needQuery,
       canEditTabName,
-      showTools,
       t,
+      dragIgnoreFrom,
     };
   },
 });
@@ -256,6 +243,10 @@ export default defineComponent({
 .tabs {
   height: 40px;
   color: #ccc;
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  overflow-y: hidden;
 
   span {
     display: inline-block;
@@ -294,7 +285,10 @@ export default defineComponent({
 
   span.active {
     border-bottom: 1px solid #409eff;
-    color: #409eff;
+
+    .tab-name {
+      color: #409eff;
+    }
   }
 }
 
@@ -304,6 +298,11 @@ export default defineComponent({
   height: 40px;
   line-height: 40px;
   padding-right: 10px;
+}
+
+.icon-operation {
+  display: inline-block;
+  margin-top: 8px;
 }
 
 .tab-header {
@@ -338,18 +337,5 @@ export default defineComponent({
   font-size: 14px;
   padding-top: 30px;
   color: #888;
-}
-
-.tools {
-  padding: 5px 0;
-  color: #999;
-  cursor: pointer;
-  position: relative;
-  text-align: center;
-
-  &:hover {
-    color: #409eff;
-    background-color: #eee;
-  }
 }
 </style>

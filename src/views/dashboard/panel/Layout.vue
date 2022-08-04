@@ -31,7 +31,7 @@ limitations under the License. -->
       :key="item.i"
       @click="clickGrid(item)"
       :class="{ active: dashboardStore.activedGridItem === item.i }"
-      drag-ignore-from="svg.d3-trace-tree, .dragger, .micro-topo-chart"
+      :drag-ignore-from="dragIgnoreFrom"
     >
       <component :is="item.type" :data="item" />
     </grid-item>
@@ -45,6 +45,7 @@ import { useDashboardStore } from "@/store/modules/dashboard";
 import { useSelectorStore } from "@/store/modules/selectors";
 import { LayoutConfig } from "@/types/dashboard";
 import controls from "../controls/index";
+import { dragIgnoreFrom } from "../data";
 
 export default defineComponent({
   name: "Layout",
@@ -53,9 +54,7 @@ export default defineComponent({
     const { t } = useI18n();
     const dashboardStore = useDashboardStore();
     const selectorStore = useSelectorStore();
-    // function layoutUpdatedEvent(newLayout: LayoutConfig[]) {
-    //   dashboardStore.setLayout(newLayout);
-    // }
+
     function clickGrid(item: LayoutConfig) {
       dashboardStore.activeGridItem(item.i);
       dashboardStore.selectWidget(item);
@@ -68,11 +67,13 @@ export default defineComponent({
       selectorStore.setCurrentService(null);
       selectorStore.setCurrentPod(null);
       dashboardStore.setEntity("");
+      dashboardStore.setConfigPanel(false);
     });
     return {
       dashboardStore,
       clickGrid,
       t,
+      dragIgnoreFrom,
     };
   },
 });

@@ -39,9 +39,9 @@ export interface LayoutConfig {
 }
 
 export type MetricConfigOpt = {
-  unit: string;
-  label: string;
-  calculation: string;
+  unit?: string;
+  label?: string;
+  calculation?: string;
   labelsIndex: string;
   sortOrder: string;
   topN?: number;
@@ -73,6 +73,7 @@ export interface LineConfig extends AreaConfig {
   showXAxis?: boolean;
   showYAxis?: boolean;
   smallTips?: boolean;
+  showlabels?: boolean;
 }
 
 export interface AreaConfig {

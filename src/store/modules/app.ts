@@ -33,6 +33,7 @@ interface AppState {
   autoRefresh: boolean;
   pageTitle: string;
   version: string;
+  isMobile: boolean;
 }
 
 export const appStore = defineStore({
@@ -51,6 +52,7 @@ export const appStore = defineStore({
     autoRefresh: false,
     pageTitle: "",
     version: "",
+    isMobile: false,
   }),
   getters: {
     duration(): Duration {
@@ -88,12 +90,9 @@ export const appStore = defineStore({
               this.duration.start.getMonth());
           break;
       }
-      const utcArr = this.utc.split(":");
-      const utcHour = isNaN(Number(utcArr[0])) ? 0 : Number(utcArr[0]);
-      const utcMin = isNaN(Number(utcArr[1])) ? 0 : Number(utcArr[1]);
       const utcSpace =
-        (utcHour + new Date().getTimezoneOffset() / 60) * 3600000 +
-        utcMin * 60000;
+        (this.utcHour + new Date().getTimezoneOffset() / 60) * 3600000 +
+        this.utcMin * 60000;
       const startUnix: number = this.duration.start.getTime();
       const endUnix: number = this.duration.end.getTime();
       const timeIntervals: string[] = [];
@@ -123,6 +122,9 @@ export const appStore = defineStore({
       this.utcMin = utcMin;
       this.utcHour = utcHour;
       this.utc = `${utcHour}:${utcMin}`;
+    },
+    setIsMobile(mode: boolean) {
+      this.isMobile = mode;
     },
     setEventStack(funcs: (() => void)[]): void {
       this.eventStack = funcs;
@@ -154,6 +156,10 @@ export const appStore = defineStore({
         return res.data;
       }
       this.utc = res.data.data.getTimeInfo.timezone / 100 + ":0";
+
+      const utcArr = this.utc.split(":");
+      this.utcHour = isNaN(Number(utcArr[0])) ? 0 : Number(utcArr[0]);
+      this.utcMin = isNaN(Number(utcArr[1])) ? 0 : Number(utcArr[1]);
 
       return res.data;
     },

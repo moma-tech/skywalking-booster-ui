@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. -->
 <template>
   <div class="flex-h row">
-    <div class="mr-5" v-if="dashboardStore.entity === EntityType[1].value">
+    <div class="mr-10" v-if="dashboardStore.entity === EntityType[1].value">
       <span class="grey mr-5">{{ t("service") }}:</span>
       <Selector
         size="small"
@@ -24,7 +24,7 @@ limitations under the License. -->
         @change="changeField('service', $event)"
       />
     </div>
-    <div class="mr-5" v-if="dashboardStore.entity !== EntityType[3].value">
+    <div class="mr-10" v-if="dashboardStore.entity !== EntityType[3].value">
       <span class="grey mr-5">{{ t("instance") }}:</span>
       <Selector
         size="small"
@@ -34,7 +34,7 @@ limitations under the License. -->
         @change="changeField('instance', $event)"
       />
     </div>
-    <div class="mr-5" v-if="dashboardStore.entity !== EntityType[2].value">
+    <div class="mr-10" v-if="dashboardStore.entity !== EntityType[2].value">
       <span class="grey mr-5">{{ t("endpoint") }}:</span>
       <Selector
         size="small"
@@ -46,7 +46,7 @@ limitations under the License. -->
         @query="searchEndpoints"
       />
     </div>
-    <div class="mr-5">
+    <div class="mr-10">
       <span class="grey mr-5">{{ t("status") }}:</span>
       <Selector
         size="small"
@@ -56,36 +56,39 @@ limitations under the License. -->
         @change="changeField('status', $event)"
       />
     </div>
-    <div class="mr-5">
-      <span class="grey mr-5">{{ t("traceID") }}:</span>
-      <el-input v-model="traceId" class="traceId" />
-    </div>
-  </div>
-  <div class="flex-h">
-    <!-- <div class="mr-5">
-      <span class="grey mr-5">{{ t("timeRange") }}:</span>
-      <TimePicker
-        :value="dateTime"
-        position="bottom"
-        format="YYYY-MM-DD HH:mm"
-        @input="changeTimeRange"
-      />
-    </div> -->
-    <div class="mr-5">
-      <span class="sm b grey mr-5">{{ t("duration") }}:</span>
-      <el-input class="inputs mr-5" v-model="minTraceDuration" />
-      <span class="grey mr-5">-</span>
-      <el-input class="inputs" v-model="maxTraceDuration" />
-    </div>
-    <ConditionTags :type="'TRACE'" @update="updateTags" />
     <el-button
-      class="search-btn"
       size="small"
       type="primary"
       @click="searchTraces"
+      class="search-btn"
     >
       {{ t("search") }}
     </el-button>
+  </div>
+  <div class="flex-h row">
+    <div class="mr-10">
+      <span class="grey mr-5">{{ t("traceID") }}:</span>
+      <el-input size="small" v-model="traceId" class="traceId" />
+    </div>
+    <div class="mr-10">
+      <span class="sm b grey mr-5">{{ t("duration") }}:</span>
+      <el-input
+        size="small"
+        class="inputs mr-5"
+        v-model="minTraceDuration"
+        type="number"
+      />
+      <span class="grey mr-5">-</span>
+      <el-input
+        size="small"
+        class="inputs"
+        v-model="maxTraceDuration"
+        type="number"
+      />
+    </div>
+  </div>
+  <div class="flex-h">
+    <ConditionTags :type="'TRACE'" @update="updateTags" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -107,8 +110,8 @@ const selectorStore = useSelectorStore();
 const dashboardStore = useDashboardStore();
 const traceStore = useTraceStore();
 const traceId = ref<string>("");
-const minTraceDuration = ref<string>("");
-const maxTraceDuration = ref<string>("");
+const minTraceDuration = ref<number>();
+const maxTraceDuration = ref<number>();
 const tagsList = ref<string[]>([]);
 const tagsMap = ref<Option[]>([]);
 const state = reactive<any>({
@@ -118,10 +121,6 @@ const state = reactive<any>({
   service: { value: "", label: "" },
 });
 
-// const dateTime = computed(() => [
-//   appStore.durationRow.start,
-//   appStore.durationRow.end,
-// ]);
 init();
 async function init() {
   if (dashboardStore.entity === EntityType[1].value) {
@@ -185,11 +184,11 @@ function searchTraces() {
     serviceInstanceId: instance || state.instance.id || undefined,
     traceState: state.status.value || "ALL",
     queryDuration: appStore.durationTime,
-    minTraceDuration: appStore.minTraceDuration || undefined,
-    maxTraceDuration: appStore.maxTraceDuration || undefined,
+    minTraceDuration: Number(minTraceDuration.value),
+    maxTraceDuration: Number(maxTraceDuration.value),
     queryOrder: "BY_DURATION",
     tags: tagsMap.value.length ? tagsMap.value : undefined,
-    paging: { pageNum: 1, pageSize: 15, needTotal: true },
+    paging: { pageNum: 1, pageSize: 20 },
   });
   queryTraces();
 }
@@ -250,6 +249,7 @@ watch(
 
 .row {
   margin-bottom: 5px;
+  position: relative;
 }
 
 .traceId {
@@ -257,7 +257,10 @@ watch(
 }
 
 .search-btn {
-  margin-left: 20px;
   cursor: pointer;
+  width: 120px;
+  position: absolute;
+  top: 0;
+  right: 10px;
 }
 </style>

@@ -17,7 +17,16 @@ limitations under the License. -->
   <div class="profile-task">
     <div>
       <div class="label">{{ t("endpointName") }}</div>
-      <el-input v-model="endpointName" class="profile-input" />
+      <Selector
+        class="profile-input"
+        size="small"
+        :value="endpointName"
+        :options="profileStore.endpoints"
+        placeholder="Select a endpoint"
+        :isRemote="true"
+        @change="changeEndpoint"
+        @query="searchEndpoints"
+      />
     </div>
     <div>
       <div class="label">{{ t("monitorTime") }}</div>
@@ -49,7 +58,12 @@ limitations under the License. -->
     </div>
     <div>
       <div class="label">{{ t("minThreshold") }} (ms)</div>
-      <el-input-number class="profile-input" :min="0" v-model="minThreshold" />
+      <el-input-number
+        size="small"
+        class="profile-input"
+        :min="0"
+        v-model="minThreshold"
+      />
     </div>
     <div>
       <div class="label">{{ t("dumpPeriod") }}</div>
@@ -100,6 +114,20 @@ const minThreshold = ref<number>(0);
 const dumpPeriod = ref<string>(InitTaskField.dumpPeriod[0].value);
 const maxSamplingCount = ref<string>(InitTaskField.maxSamplingCount[0].value);
 
+async function searchEndpoints(keyword: string) {
+  if (!selectorStore.currentService) {
+    return;
+  }
+  const service = selectorStore.currentService.id;
+  const res = await profileStore.getEndpoints(service, keyword);
+
+  if (res.errors) {
+    ElMessage.error(res.errors);
+    return;
+  }
+  endpointName.value = profileStore.taskEndpoints[0].value;
+}
+
 function changeMonitorTime(opt: string) {
   monitorTime.value = opt;
 }
@@ -116,10 +144,13 @@ function changeMaxSamplingCount(opt: any[]) {
   maxSamplingCount.value = opt[0].value;
 }
 
+function changeEndpoint(opt: any[]) {
+  endpointName.value = opt[0].value;
+}
+
 async function createTask() {
   emits("close");
-  const date =
-    monitorTime.value === "0" ? appStore.durationRow.start : time.value;
+  const date = monitorTime.value === "0" ? new Date() : time.value;
   const params = {
     serviceId: selectorStore.currentService.id,
     endpointName: endpointName.value,
@@ -148,7 +179,7 @@ function changeTimeRange(val: Date) {
 <style lang="scss" scoped>
 .profile-task {
   margin: 0 auto;
-  width: 350px;
+  width: 400px;
 }
 
 .date {

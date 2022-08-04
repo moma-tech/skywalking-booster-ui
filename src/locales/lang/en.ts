@@ -111,8 +111,8 @@ const msg = {
   noRoot: "Please set a root dashboard for",
   noWidget: "Please add widgets.",
   rename: "Rename",
-  deleteTitle: "Are you sure to delete this?",
-  rootTitle: "Are you sure to set this?",
+  deleteTitle: "Are you sure you want to delete this?",
+  rootTitle: "Are you sure you want to set this?",
   selfObservability: "Self Observability",
   satellite: "Satellite",
   skyWalkingServer: "SkyWalking Server",
@@ -131,6 +131,12 @@ const msg = {
   metricLabel: "Metric Label",
   showUnit: "Show Unit",
   noGraph: "No Graph",
+  taskId: "Task ID",
+  triggerType: "Trigger Type",
+  targetType: "Target Type",
+  ebpfTip: "Don't have a process for profiling",
+  processSelect: "Click to select processes",
+  page: "Page",
   hourTip: "Select Hour",
   minuteTip: "Select Minute",
   secondTip: "Select Second",
@@ -138,7 +144,7 @@ const msg = {
   yearSuffix: "Year",
   monthsHead: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec",
   months: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec",
-  weeks: "Mon_Tue_Wed_Thu_Fir_Sat_Sun",
+  weeks: "Mon_Tue_Wed_Thu_Fri_Sat_Sun",
   hello: "Hello",
   helloMessage: "Welcome Back, Apache SkyWalking APM System !",
   username: "Username",
@@ -237,6 +243,10 @@ const msg = {
   defaultDepth: "Default Depth",
   traceTagsTip: `Only tags defined in the core/default/searchableTracesTags are searchable.
   Check more details on the Configuration Vocabulary page`,
+  logTagsTip: `Only tags defined in the core/default/searchableLogsTags are searchable.
+  Check more details on the Configuration Vocabulary page`,
+  alarmTagsTip: `Only tags defined in the core/default/searchableAlarmTags are searchable.
+  Check more details on the Configuration Vocabulary page`,
   tagsLink: "Configuration Vocabulary page",
   addTag: "Please input a tag",
   log: "Log",
@@ -317,7 +327,7 @@ const msg = {
   addExcludingKeywordsOfContent: "Please input a keyword of excluding content",
   noticeTag: "Please press Enter after inputting a tag(key=value).",
   conditionNotice:
-    "Notice: Please press Enter after inputting a tag, key of content, exclude key of content(key=value).",
+    "Notice: Please press Enter after inputting a key of content, exclude key of content(key=value).",
   language: "Language",
 };
 export default msg;

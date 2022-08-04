@@ -32,7 +32,7 @@ interface Option {
 const emit = defineEmits(["change"]);
 const props = defineProps({
   options: {
-    type: Array as PropType<(Option & { disabled: boolean })[]>,
+    type: Array as PropType<Option[]>,
     default: () => [],
   },
   value: {
@@ -44,7 +44,7 @@ const props = defineProps({
 
 const selected = ref<string>(props.value);
 
-function checked(opt: string) {
+function checked(opt: unknown) {
   emit("change", opt);
 }
 </script>

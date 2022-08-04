@@ -203,16 +203,13 @@ async function setMetricType(chart?: any) {
     }
   );
   const metrics: any = states.metricList.filter(
-    (d: { value: string; type: string }) => {
-      const index = states.metrics.findIndex((m: string) => m === d.value);
-      if (index > -1) {
-        return d;
-      }
-    }
+    (d: { value: string; type: string }) => states.metrics.includes(d.value)
   );
 
   if (metrics.length) {
-    states.metrics = metrics.map((d: { value: string }) => d.value);
+    // keep states.metrics index
+    const m = metrics.map((d: { value: string }) => d.value);
+    states.metrics = states.metrics.filter((d) => m.includes(d));
   } else {
     states.metrics = [""];
     states.metricTypes = [""];
@@ -466,7 +463,7 @@ function setMetricConfig(index: number) {
 .chart-types {
   span {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 2px 10px;
     border: 1px solid #ccc;
     background-color: #fff;
     border-right: 0;

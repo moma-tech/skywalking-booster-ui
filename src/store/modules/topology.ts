@@ -75,7 +75,7 @@ export const topologyStore = defineStore({
     setTopology(data: { nodes: Node[]; calls: Call[] }) {
       const obj = {} as any;
       const services = useSelectorStore().services;
-      const nodes = data.nodes.reduce((prev: Node[], next: Node) => {
+      const nodes = (data.nodes || []).reduce((prev: Node[], next: Node) => {
         if (!obj[next.id]) {
           obj[next.id] = true;
           const s = services.filter((d: Service) => d.id === next.id)[0] || {};
@@ -84,7 +84,7 @@ export const topologyStore = defineStore({
         }
         return prev;
       }, []);
-      const calls = data.calls.reduce((prev: Call[], next: Call) => {
+      const calls = (data.calls || []).reduce((prev: Call[], next: Call) => {
         if (!obj[next.id]) {
           obj[next.id] = true;
           next.value = next.value || 1;
@@ -117,7 +117,7 @@ export const topologyStore = defineStore({
     async getDepthServiceTopology(serviceIds: string[], depth: number) {
       const res = await this.getServicesTopology(serviceIds);
       if (depth > 1) {
-        const ids = res.nodes
+        const ids = (res.nodes || [])
           .map((item: Node) => item.id)
           .filter((d: string) => !serviceIds.includes(d));
         if (!ids.length) {
@@ -410,6 +410,9 @@ export const topologyStore = defineStore({
       const idsC = this.calls
         .filter((i: Call) => i.detectPoints.includes("CLIENT"))
         .map((b: Call) => b.id);
+      if (!idsC.length) {
+        return;
+      }
       const param = await useQueryTopologyMetrics(linkClientMetrics, idsC);
       const res = await this.getCallClientMetrics(param);
 
@@ -425,6 +428,9 @@ export const topologyStore = defineStore({
       const idsS = this.calls
         .filter((i: Call) => i.detectPoints.includes("SERVER"))
         .map((b: Call) => b.id);
+      if (!idsS.length) {
+        return;
+      }
       const param = await useQueryTopologyMetrics(linkServerMetrics, idsS);
       const res = await this.getCallServerMetrics(param);
 
@@ -438,6 +444,9 @@ export const topologyStore = defineStore({
         return;
       }
       const ids = this.nodes.map((d: Node) => d.id);
+      if (!ids.length) {
+        return;
+      }
       const param = await useQueryTopologyMetrics(nodeMetrics, ids);
       const res = await this.getNodeMetricValue(param);
 

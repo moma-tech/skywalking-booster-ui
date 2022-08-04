@@ -129,6 +129,12 @@ const msg = {
   metricLabel: "指标标签",
   showUnit: "显示单位",
   noGraph: "无图表",
+  taskId: "任务ID",
+  triggerType: "触发类型",
+  targetType: "目标类型",
+  processSelect: "点击选择进程",
+  ebpfTip: "没有进程可以分析",
+  page: "页面",
   hourTip: "选择小时",
   minuteTip: "选择分钟",
   secondTip: "选择秒数",
@@ -238,6 +244,10 @@ const msg = {
   defaultDepth: "默认深度",
   traceTagsTip:
     "只有core/default/searchableTracesTags中定义的标记才可搜索。查看配置词汇表页面上的更多详细信息。",
+  logTagsTip:
+    "只有core/default/searchableTracesTags中定义的标记才可搜索。查看配置词汇表页面上的更多详细信息。",
+  alarmTagsTip:
+    "只有core/default/searchableTracesTags中定义的标记才可搜索。查看配置词汇表页面上的更多详细信息。",
   tagsLink: "配置词汇页",
   addTag: "请添加标签",
   logCategory: "日志类别",
@@ -318,7 +328,7 @@ const msg = {
   addExcludingKeywordsOfContent: "请输入一个内容不包含的关键词",
   noticeTag: "请输入一个标签(key=value)之后回车",
   conditionNotice:
-    "请输入一个标签、内容关键词或者内容不包含的关键词(key=value)之后回车",
+    "请输入一个内容关键词或者内容不包含的关键词(key=value)之后回车",
   language: "语言",
 };
 export default msg;
