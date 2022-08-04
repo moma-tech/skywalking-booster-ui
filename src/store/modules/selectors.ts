@@ -20,6 +20,7 @@ import { store } from "@/store";
 import graphql from "@/graphql";
 import { AxiosResponse } from "axios";
 import { useAppStoreWithOut } from "@/store/modules/app";
+import { Services } from "@/graphql/fragments/selector";
 interface SelectorState {
   services: Service[];
   destServices: Service[];
@@ -69,6 +70,9 @@ export const selectorStore = defineStore({
       if (!res.data.errors) {
         this.services = res.data.data.services || [];
         this.destServices = res.data.data.services || [];
+        this.services.forEach((element: any) => {
+          element.category = element.category.split("::")[1];
+        });
       }
       return res.data;
     },

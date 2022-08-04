@@ -21,6 +21,8 @@ export const Services = {
     id
     value: name
     label: name
+    country: group
+    category: name
     group
     layers
     normal

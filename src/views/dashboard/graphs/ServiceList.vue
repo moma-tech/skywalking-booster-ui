@@ -38,12 +38,27 @@ limitations under the License. -->
         :border="true"
         :style="{ fontSize: '14px' }"
       >
-        <el-table-column label="Service Groups" v-if="config.showGroup">
+        <el-table-column
+          :min-width="15"
+          label="Country"
+          align="center"
+          v-if="config.showGroup"
+        >
           <template #default="scope">
-            {{ scope.row.group }}
+            {{ scope.row.country }}
           </template>
         </el-table-column>
-        <el-table-column label="Service Names">
+        <el-table-column
+          :min-width="15"
+          label="Groups"
+          align="center"
+          v-if="config.showGroup"
+        >
+          <template #default="scope">
+            {{ scope.row.category }}
+          </template>
+        </el-table-column>
+        <el-table-column :min-width="30" label="Service Names">
           <template #default="scope">
             <span
               class="link"
@@ -111,7 +126,7 @@ const props = defineProps({
 const selectorStore = useSelectorStore();
 const dashboardStore = useDashboardStore();
 const chartLoading = ref<boolean>(false);
-const pageSize = 10;
+const pageSize = 20;
 const services = ref<Service[]>([]);
 const searchText = ref<string>("");
 const groups = ref<any>({});
@@ -130,12 +145,20 @@ async function queryServices() {
     ElMessage.error(resp.errors);
   }
   sortServices.value = selectorStore.services.sort((a: any, b: any) => {
-    const groupA = a.group.toUpperCase();
-    const groupB = b.group.toUpperCase();
-    if (groupA < groupB) {
+    const countryA = a.group.toUpperCase();
+    const countryB = b.group.toUpperCase();
+    const categoryA = a.category.toUpperCase();
+    const categoryB = b.category.toUpperCase();
+    if (countryA < countryB) {
       return -1;
     }
-    if (groupA > groupB) {
+    if (countryA > countryB) {
+      return 1;
+    }
+    if (categoryA < categoryB) {
+      return -1;
+    }
+    if (categoryA > categoryB) {
       return 1;
     }
     return 0;
@@ -220,6 +243,7 @@ async function queryServiceMetrics(currentServices: Service[]) {
   services.value = currentServices;
 }
 function objectSpanMethod(param: any): any {
+  console.log(param);
   if (!props.config.showGroup) {
     return;
   }
@@ -232,7 +256,12 @@ function objectSpanMethod(param: any): any {
       colspan: 0,
     };
   }
-  return { rowspan: groups.value[param.row.group], colspan: 1 };
+  if (param.columnIndex == 0) {
+    return { rowspan: groups.value[param.row.group], colspan: 1 };
+  }
+  // if(param.columnIndex == 1 ){
+  //    return { rowspan: groups.value[param.row.country], colspan: 1 };
+  // }
 }
 function changePage(pageIndex: number) {
   const arr = sortServices.value.filter((d: Service, index: number) => {

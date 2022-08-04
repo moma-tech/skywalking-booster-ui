@@ -30,11 +30,11 @@ import { routesK8s } from "./k8s";
 
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
-  ...routesMesh,
-  ...routesFunctions,
-  ...routesK8s,
-  ...routesInfra,
-  ...routesBrowser,
+  //...routesMesh,
+  //...routesFunctions,
+  //...routesK8s,
+  //...routesInfra,
+  //...routesBrowser,
   ...routesDatabase,
   ...routesSelf,
   ...routesDashboard,

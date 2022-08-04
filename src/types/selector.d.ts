@@ -18,6 +18,8 @@ export type Service = {
   id?: string;
   label: string;
   value: string;
+  country?: string;
+  category?: string;
   layers?: string[];
   normal?: boolean;
   group?: string;
