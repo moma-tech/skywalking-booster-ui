@@ -71,7 +71,9 @@ export const selectorStore = defineStore({
         this.services = res.data.data.services || [];
         this.destServices = res.data.data.services || [];
         this.services.forEach((element: any) => {
-          element.category = element.category.split("::")[1];
+          if (element.category.indexOf("::") > -1) {
+            element.category = element.category.split("::")[1];
+          }
         });
       }
       return res.data;

@@ -147,14 +147,17 @@ async function queryServices() {
   sortServices.value = selectorStore.services.sort((a: any, b: any) => {
     const countryA = a.group.toUpperCase();
     const countryB = b.group.toUpperCase();
-    const categoryA = a.category.toUpperCase();
-    const categoryB = b.category.toUpperCase();
     if (countryA < countryB) {
       return -1;
     }
     if (countryA > countryB) {
       return 1;
     }
+    if (a.category === undefined || b.category === undefined) {
+      return 0;
+    }
+    const categoryA = a.category.toUpperCase();
+    const categoryB = b.category.toUpperCase();
     if (categoryA < categoryB) {
       return -1;
     }
